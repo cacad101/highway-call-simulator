@@ -1,50 +1,57 @@
 {
     "data":{
         "input_file": "data/input/",
-        "output_file": "data/output",
         "real_input": "data/input/real/PCS_TEST_DETERMINSTIC_1718S2.csv",
+        "output_file": "data/output",
         "image_file": "data/image/"
     },
 
     "log":{
         "path": "logs/",
-        "level": 10
+        "level": 40
     },
 
     "simulator":{
-        "reserve_channel": 0,
+        "variable": {
+            "reserve_channel": 0,
+            "base_count": 20,
+            "base_diameter": 2000,
+            "base_channel":10
+        },
+        "optimize":["reserve_channel", 0, 10],
+        "event": 10000,
         "from_file": false,
+        "warm_up_threshold": 0,
+        "auto_warm_up": false,
         "simulation_count": 1,
         "distribution": {
+            "inter_arrival_time": {
+                "dist": "exponential",
+                "set": [1.3697233657450982]
+            },
             "arrival_time": {
-                "dist": "UNIFORM",
-                "min": 0,
-                "max": 13696.799
+                "dist": "uniform",
+                "set": [0, 13696.799]
             },
             "base_station": {
-                "dist": "UNIFORM_INT",
-                "min": 0,
-                "max": 20
+                "dist": "randint",
+                "set": [0, 20]
             },
             "call_loc_offset": {
-                "dist": "UNIFORM",
-                "min": 0,
-                "max": 2000
+                "dist": "uniform",
+                "set": [0, 2000]
             },
             "call_duration": {
-                "dist": "EXPONENTIAL",
-                "loc": 10.003999999991516,
-                "scale": 99.8319274596104
+                "dist": "exponential",
+                "set": [99.8319274596104]
             },
             "car_velocity":{
-                "dist": "NORMAL",
-                "mean": 120.0720949,
-                "std": 9.018604658543028
+                "dist": "normal",
+                "set": [33.35335969444445, 2.5051679607063964]
             },
             "car_direction": {
-                "dist": "UNIFORM_INT",
-                "min": 0,
-                "max": 2
+                "dist": "randint",
+                "set": [0, 2]
             }
         }
     }
