@@ -1,0 +1,51 @@
+{
+    "data":{
+        "input_file": "data/input/",
+        "output_file": "data/output",
+        "real_input": "data/input/real/PCS_TEST_DETERMINSTIC_1718S2.csv",
+        "image_file": "data/image/"
+    },
+
+    "log":{
+        "path": "logs/",
+        "level": 10
+    },
+
+    "simulator":{
+        "reserve_channel": 0,
+        "from_file": false,
+        "simulation_count": 1,
+        "distribution": {
+            "arrival_time": {
+                "dist": "UNIFORM",
+                "min": 0,
+                "max": 13696.799
+            },
+            "base_station": {
+                "dist": "UNIFORM_INT",
+                "min": 0,
+                "max": 20
+            },
+            "call_loc_offset": {
+                "dist": "UNIFORM",
+                "min": 0,
+                "max": 2000
+            },
+            "call_duration": {
+                "dist": "EXPONENTIAL",
+                "loc": 10.003999999991516,
+                "scale": 99.8319274596104
+            },
+            "car_velocity":{
+                "dist": "NORMAL",
+                "mean": 120.0720949,
+                "std": 9.018604658543028
+            },
+            "car_direction": {
+                "dist": "UNIFORM_INT",
+                "min": 0,
+                "max": 2
+            }
+        }
+    }
+}
