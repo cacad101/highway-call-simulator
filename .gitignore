@@ -102,4 +102,7 @@ ENV/
 
 # Data and logs
 data/input/*
+data/output/*
+data/image/*
 logs/*
+.vscode
