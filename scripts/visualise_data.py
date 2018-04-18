@@ -18,8 +18,9 @@ def main():
     init_logger(settings.log.path, file_name, settings.log.level)
     logging.info("[{}] Logging initiated".format(file_name))
 
-    logging.info("[{}] Input data loaded from {}".format(file_name, settings.data.real_input))
-    real_input = pd.read_csv(settings.data.real_input)
+    file_input = settings.data.real_input
+    logging.info("[{}] Input data loaded from {}".format(file_name, file_input))
+    real_input = pd.read_csv(file_input)
 
     save_to = os.path.join(settings.data.image_file, get_now_str())
     plot = False
