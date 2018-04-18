@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as sc
 
-from utils_highway_call_simulator.utility import init_logger, load_settings, get_settings_path_from_arg
+from utils_highway_call_simulator.utility import init_logger, load_settings, get_settings_path_from_arg, get_now_str
 from utils_highway_call_simulator.visualisation import visualize_histogram
 
 
@@ -22,7 +22,7 @@ def main():
     logging.info("[{}] Input data loaded from {}".format(file_name, settings.data.real_input))
     real_input = pd.read_csv(settings.data.real_input)
 
-    save_to =  settings.data.image_file
+    save_to =  os.path.join(settings.data.image_file, get_now_str())
     plot = True
     bins = 20
     size = 10000
@@ -35,11 +35,24 @@ def main():
     max_val = data.to_frame().max()
     logging.info("[{}] Uniform disctribution with min:{}, max:{}".format(file_name, min_val, max_val))
     new_data = np.random.uniform(low=min_val, high=max_val, size=size)
-    new_mean = np.mean(new_data)
-    new_std = np.std(new_data)
     new_min_val = data.to_frame().min()
     new_max_val = data.to_frame().max()
     logging.info("[{}] Uniform disctribution with min:{}, max:{}".format(file_name, new_min_val, new_max_val))
+    visualize_histogram(new_data, "generated_"+"_".join(col.split()[:-1]), save_to=save_to, plot=plot, bins=bins)
+    logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
+        file_name, col, save_to, plot
+        ))
+
+    # Inter-arrival Time
+    col = "Inter arrival time (sec)"
+    logging.info("[{}] Detecting distribution for {}".format(file_name, col))
+    data = data.diff()
+    data.drop(0, inplace=True)
+    _, scale = sc.expon.fit(data)
+    logging.info("[{}] Exponential disctribution with scale:{}".format(file_name, scale))
+    new_data = np.random.exponential(scale=scale, size=size)
+    _, new_scale = sc.expon.fit(data)
+    logging.info("[{}] Exponential disctribution with scale:{}".format(file_name, new_scale))
     visualize_histogram(new_data, "generated_"+"_".join(col.split()[:-1]), save_to=save_to, plot=plot, bins=bins)
     logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
         file_name, col, save_to, plot
@@ -49,12 +62,12 @@ def main():
     col = "Base station (sec)"
     logging.info("[{}] Detecting distribution for {}".format(file_name, col))
     data = real_input[col]
-    min_val = data.to_frame().min()
-    max_val = data.to_frame().max()
+    min_val = int(data.to_frame().min())
+    max_val = int(data.to_frame().max())
     logging.info("[{}] Uniform disctribution with min:{}, max:{}".format(file_name, min_val, max_val))
     new_data = np.random.randint(low=min_val, high=max_val, size=size)
-    new_min_val = data.to_frame().min()
-    new_max_val = data.to_frame().max()
+    new_min_val = int(data.to_frame().min())
+    new_max_val = int(data.to_frame().max())
     logging.info("[{}] Uniform disctribution with min:{}, max:{}".format(file_name, new_min_val, new_max_val))
     visualize_histogram(new_data, "generated_"+"_".join(col.split()[:-1]), save_to=save_to, plot=plot, bins=bins)
     logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
@@ -65,11 +78,11 @@ def main():
     col = "Call duration (sec)"
     logging.info("[{}] Detecting distribution for {}".format(file_name, col))
     data = real_input[col]
-    loc, scale = sc.expon.fit(data)
-    logging.info("[{}] Exponential disctribution with loc:{}, scale:{}".format(file_name, loc, scale))
-    new_data = sc.expon.rvs(loc=loc, scale=scale, size=size)
-    new_loc, new_scale = sc.expon.fit(data)
-    logging.info("[{}] Exponential disctribution with loc:{}, scale:{}".format(file_name, new_loc, new_scale))
+    _, scale = sc.expon.fit(data)
+    logging.info("[{}] Exponential disctribution with scale:{}".format(file_name, scale))
+    new_data = np.random.exponential(scale=scale, size=size)
+    _, new_scale = sc.expon.fit(data)
+    logging.info("[{}] Exponential disctribution with scale:{}".format(file_name, new_scale))
     visualize_histogram(new_data, "generated_"+"_".join(col.split()[:-1]), save_to=save_to, plot=plot, bins=bins)
     logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
         file_name, col, save_to, plot
@@ -91,7 +104,6 @@ def main():
     logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
         file_name, col, save_to, plot
         ))
-
 
 
 if __name__ == "__main__":
