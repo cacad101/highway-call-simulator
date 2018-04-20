@@ -14,7 +14,7 @@ import pandas as pd
 from utils_highway_call_simulator.utility import init_logger, load_settings, get_settings_path_from_arg, ensure_dir, get_now_str
 
 
-class DataGenerator:
+class RandomDataGenerator:
     """ Data generator class """
 
     def __init__(self, distribution_settings):
@@ -79,9 +79,10 @@ class DataGenerator:
         car_velocity = getattr(np.random, self.car_velocity_settings.dist)(*self.car_velocity_settings.set)
         car_direction = getattr(np.random, self.car_direction_settings.dist)(*self.car_direction_settings.set)
 
-        arrival_event = pd.DataFrame([[arrival_no, arrival_time, base_station, call_loc_offset, call_duration, car_velocity, car_direction]], columns=self.col)
+        arrival_event = [arrival_time, base_station, call_loc_offset, call_duration, car_velocity, car_direction]
         if save:
-            self.arrival_events = self.arrival_events.append(arrival_event)
+            arrival_frame = pd.DataFrame([[arrival_no]+arrival_event], columns=self.col)
+            self.arrival_events = self.arrival_events.append(arrival_frame)
 
         inter_arrival_time = getattr(np.random, self.inter_arrival_time_settings.dist)(*self.inter_arrival_time_settings.set)
         self.arrival_time += inter_arrival_time
@@ -105,7 +106,7 @@ def main():
     init_logger(settings.log.path, file_name, settings.log.level)
     logging.info("[{}] Logging initiated".format(file_name))
 
-    dg = DataGenerator(settings.simulator.distribution)
+    dg = RandomDataGenerator(settings.simulator.distribution)
     for i in range(settings.simulator.event):
         dg.get_next()
     this_folder = os.path.join(settings.data.input_file, get_now_str())
