@@ -8,21 +8,21 @@
 
     "log":{
         "path": "logs/",
-        "level": 40
+        "level": 0
     },
 
     "simulator":{
         "variable": {
-            "reserve_channel": 0,
+            "reserved_channel": 0,
             "base_count": 20,
             "base_diameter": 2000,
-            "base_channel":10
+            "base_channel": 10
         },
-        "optimize":["reserve_channel", 0, 10],
         "event": 10000,
-        "from_file": false,
         "warm_up_threshold": 0,
         "auto_warm_up": false,
+        "from_file": false,
+        "optimize":["reserved_channel", 0, 10],
         "simulation_count": 1,
         "distribution": {
             "inter_arrival_time": {
