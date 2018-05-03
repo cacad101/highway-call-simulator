@@ -24,7 +24,7 @@ def main():
 
     save_to = os.path.join(settings.data.image_file, get_now_str())
     plot = False
-    bins = 20
+    bins = 100
     for col in real_input.columns:
         logging.info("[{}] Visualizing data data:{}, save_to:{}, plot:{}".format(
             file_name, col, save_to, plot

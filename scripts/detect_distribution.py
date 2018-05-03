@@ -24,7 +24,7 @@ def main():
 
     save_to =  os.path.join(settings.data.image_file, get_now_str())
     plot = True
-    bins = 20
+    bins = 100
     size = 10000
 
     # Arrival Time
