@@ -8,7 +8,7 @@
 
     "log":{
         "path": "logs/",
-        "level": 0
+        "level": 20
     },
 
     "simulator":{
@@ -19,8 +19,10 @@
             "base_channel": 10
         },
         "event": 10000,
-        "warm_up_threshold": 0,
-        "auto_warm_up": false,
+        "warm_up_threshold": {
+            "dropped_call": 0.00314,
+            "blocked_call": 0.00184
+        },
         "from_file": false,
         "optimize":["reserved_channel", 0, 10],
         "simulation_count": 1,
