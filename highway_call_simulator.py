@@ -6,6 +6,7 @@ import queue
 
 from utils_highway_call_simulator.utility import init_logger, load_settings, get_settings_path_from_arg, get_now_str
 from utils_highway_call_simulator.data_generator import RandomDataGenerator
+from utils_highway_call_simulator.visualisation import visualize_line
 
 
 class HighwayCallSimulator:
@@ -36,6 +37,8 @@ class HighwayCallSimulator:
 
         # Events
         self.warm_up_threshold = False
+        self.blocked_call_history = []
+        self.dropped_call_history = []
         self.data_generator = None
         self.event_count = 0
         self.event_total_count = 0
@@ -165,8 +168,11 @@ class HighwayCallSimulator:
         self.event_count = event_count
         self.data_generator = data_generator
         self.warm_up_threshold = warm_up_threshold
-        if warm_up_threshold:
-            self.get_stat = False
+
+        dropped_call_warmup = False
+        dropped_warmup = True
+        blocked_call_warmup = False
+        blocked_warmup = True
 
         if self.event_total_count < self.event_count:
             next_initiation_event = self.data_generator.get_next()
@@ -175,8 +181,6 @@ class HighwayCallSimulator:
 
         next_event = self.get_next_event()
         while next_event:
-            if self.warm_up_threshold <= self.simulation_time:
-                self.get_stat = True
             self.simulation_time = next_event[0]
             next_event_type = next_event[-1]
             if next_event_type == HighwayCallSimulator.CALL_INITIATION_EVENT:
@@ -186,6 +190,30 @@ class HighwayCallSimulator:
             elif next_event_type == HighwayCallSimulator.CALL_HANDOVER_EVENT:
                 self.handle_handover_call(*next_event[1:-1])
             next_event = self.get_next_event()
+
+            dropped_call = self.total_dropped_call/self.total_call
+            self.dropped_call_history.append(dropped_call)
+            blocked_call = self.total_blocked_call/self.total_call
+            self.blocked_call_history.append(blocked_call)
+
+            if dropped_warmup:
+                if dropped_call >= self.warm_up_threshold.dropped_call:
+                    dropped_call_warmup = True
+                    dropped_warmup = None
+
+            if blocked_warmup:
+                if blocked_call >= self.warm_up_threshold.blocked_call:
+                    blocked_call_warmup = True
+                    blocked_warmup = None
+
+            if dropped_call_warmup and blocked_call_warmup:
+                dropped_call_warmup = False
+                blocked_call_warmup = False
+                print("Warmup done at {}".format(self.simulation_time))
+                logging.info("Warmup done at {}".format(self.simulation_time))
+                self.total_call = 1
+                self.total_blocked_call = 0
+                self.total_dropped_call = 0
 
         return self.print_stats()
 
@@ -222,6 +250,9 @@ def main():
 
     data_generator = RandomDataGenerator(settings.simulator.distribution)
     simulator.simulate(settings.simulator.event, data_generator, settings.simulator.warm_up_threshold)
+    image_stat_path = os.path.join(settings.data.image_file, "highway_simulator_test")
+    visualize_line(simulator.dropped_call_history, "dropped_call", image_stat_path)
+    visualize_line(simulator.blocked_call_history, "blocked_call", image_stat_path)
     input_path = os.path.join(settings.data.input_file, "highway_simulator_test")
     data_generator.save(input_path, ext=get_now_str())
 
